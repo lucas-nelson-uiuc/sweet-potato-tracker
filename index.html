@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Sweet Potato" />
+  <meta name="theme-color" content="#b85c1a" />
+  <title>🍠 Sweet Potato Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #1a0f07;
+      --surface: #2a1a0e;
+      --card: #321f10;
+      --orange: #e8672a;
+      --orange-bright: #ff7c38;
+      --amber: #f0a83a;
+      --cream: #f5e8d0;
+      --muted: #8a6a50;
+      --border: #4a2e1a;
+    }
+
+```
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--cream);
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  overflow-x: hidden;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.4;
+}
+
+/* Radial glow */
+body::after {
+  content: '';
+  position: fixed;
+  top: -30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80vw;
+  height: 80vw;
+  background: radial-gradient(circle, rgba(232,103,42,0.12) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app {
+  position: relative;
+  z-index: 1;
+  max-width: 430px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* HEADER */
+header {
+  padding-top: calc(env(safe-area-inset-top) + 32px);
+  padding-bottom: 24px;
+  text-align: center;
+}
+
+.header-label {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--cream);
+  line-height: 1.1;
+}
+
+h1 span {
+  color: var(--orange);
+}
+
+/* BIG LOG BUTTON */
+.log-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 0 40px;
+}
+
+.big-btn {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  border: none;
+  background: radial-gradient(circle at 35% 35%, #ff9040, #c45018 60%, #8a3010);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  box-shadow:
+    0 0 0 1px rgba(232,103,42,0.3),
+    0 8px 32px rgba(0,0,0,0.5),
+    0 0 60px rgba(232,103,42,0.2);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  position: relative;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.big-btn::before {
+  content: '';
+  position: absolute;
+  top: 12%;
+  left: 20%;
+  width: 40%;
+  height: 30%;
+  background: radial-gradient(ellipse, rgba(255,255,255,0.2), transparent);
+  border-radius: 50%;
+}
+
+.big-btn:active {
+  transform: scale(0.93);
+  box-shadow:
+    0 0 0 1px rgba(232,103,42,0.3),
+    0 4px 16px rgba(0,0,0,0.5),
+    0 0 30px rgba(232,103,42,0.15);
+}
+
+.btn-hint {
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+
+/* TOTAL BADGE */
+.total-strip {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.total-label {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.total-number {
+  font-family: 'Playfair Display', serif;
+  font-size: 42px;
+  font-weight: 900;
+  color: var(--orange-bright);
+  line-height: 1;
+}
+
+.total-emoji {
+  font-size: 28px;
+}
+
+/* SECTION TITLE */
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--cream);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* MONTH CARDS */
+.months {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 40px;
+}
+
+.month-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: border-color 0.2s;
+}
+
+.month-card.current {
+  border-color: rgba(232,103,42,0.5);
+  background: linear-gradient(135deg, var(--card), #3d2415);
+}
+
+.month-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--cream);
+  min-width: 90px;
+}
+
+.month-bar-wrap {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.month-bar {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--orange), var(--amber));
+  transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.month-count {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--orange-bright);
+  min-width: 36px;
+  text-align: right;
+}
+
+.month-emojis {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 4px;
+  word-break: break-all;
+  line-height: 1.5;
+}
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom) + 32px);
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--orange);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 99px;
+  font-size: 15px;
+  font-weight: 500;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 200;
+  white-space: nowrap;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* POP ANIMATION */
+@keyframes pop {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.18); }
+  60% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.popping {
+  animation: pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Floating emoji animation */
+.float-emoji {
+  position: fixed;
+  font-size: 32px;
+  pointer-events: none;
+  z-index: 150;
+  animation: floatUp 1s ease-out forwards;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-160px) scale(0.5); opacity: 0; }
+}
+
+/* Undo */
+.undo-row {
+  display: flex;
+  justify-content: center;
+  margin-top: -24px;
+  margin-bottom: 28px;
+}
+
+.undo-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  padding: 8px 18px;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.undo-btn:active {
+  color: var(--cream);
+  border-color: var(--muted);
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  padding: 24px 0;
+}
+```
+
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="header-label">Daily tracker</div>
+    <h1>Sweet <span>Potato</span><br>Journal</h1>
+  </header>
+
+  <section class="log-section">
+    <button class="big-btn" id="logBtn" onclick="logOne()">🍠</button>
+    <div class="btn-hint">tap to log one</div>
+  </section>
+
+  <div class="total-strip">
+    <div>
+      <div class="total-label">All time total</div>
+      <div class="total-number" id="totalCount">0</div>
+    </div>
+    <div class="total-emoji">🍠</div>
+  </div>
+
+  <div class="undo-row">
+    <button class="undo-btn" onclick="undoOne()">↩ Undo last</button>
+  </div>
+
+  <div class="section-title">By Month</div>
+  <div class="months" id="monthsList">
+    <div class="empty-state">No sweet potatoes logged yet.<br>Tap the button above! 🍠</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const STORAGE_KEY = 'sp_log_v1';
+
+  function loadLog() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    } catch { return []; }
+  }
+
+  function saveLog(log) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(log));
+  }
+
+  function getMonthKey(date) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+  }
+
+  function monthLabel(key) {
+    const [y, m] = key.split('-');
+    const d = new Date(+y, +m - 1, 1);
+    return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  }
+
+  function buildMonthMap(log) {
+    const map = {};
+    for (const ts of log) {
+      const k = getMonthKey(new Date(ts));
+      map[k] = (map[k] || 0) + 1;
+    }
+    return map;
+  }
+
+  function render() {
+    const log = loadLog();
+    const total = log.length;
+    document.getElementById('totalCount').textContent = total;
+
+    const map = buildMonthMap(log);
+    const keys = Object.keys(map).sort().reverse();
+    const max = Math.max(...Object.values(map), 1);
+    const currentKey = getMonthKey(new Date());
+
+    const container = document.getElementById('monthsList');
+    if (keys.length === 0) {
+      container.innerHTML = '<div class="empty-state">No sweet potatoes logged yet.<br>Tap the button above! 🍠</div>';
+      return;
+    }
+
+    container.innerHTML = keys.map(k => {
+      const count = map[k];
+      const pct = Math.round((count / max) * 100);
+      const isCurrent = k === currentKey;
+      const emojis = '🍠'.repeat(Math.min(count, 30)) + (count > 30 ? `+${count-30}` : '');
+      return `
+        <div class="month-card ${isCurrent ? 'current' : ''}">
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+              <div class="month-name">${monthLabel(k)}</div>
+              <div class="month-count">${count}</div>
+            </div>
+            <div class="month-bar-wrap"><div class="month-bar" style="width:${pct}%"></div></div>
+            <div class="month-emojis">${emojis}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  function spawnFloater() {
+    const el = document.createElement('div');
+    el.className = 'float-emoji';
+    el.textContent = '🍠';
+    const btn = document.getElementById('logBtn');
+    const rect = btn.getBoundingClientRect();
+    el.style.left = (rect.left + rect.width / 2 - 16) + 'px';
+    el.style.top = (rect.top + rect.height / 2 - 16) + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1000);
+  }
+
+  function logOne() {
+    const log = loadLog();
+    log.push(Date.now());
+    saveLog(log);
+    render();
+
+    const btn = document.getElementById('logBtn');
+    btn.classList.remove('popping');
+    void btn.offsetWidth;
+    btn.classList.add('popping');
+    spawnFloater();
+
+    const todayCount = buildMonthMap(log)[getMonthKey(new Date())] || 0;
+    showToast(`🍠 #${todayCount} this month!`);
+  }
+
+  function undoOne() {
+    const log = loadLog();
+    if (log.length === 0) { showToast('Nothing to undo!'); return; }
+    log.pop();
+    saveLog(log);
+    render();
+    showToast('Removed last entry');
+  }
+
+  render();
+</script>
+
+</body>
+</html>
