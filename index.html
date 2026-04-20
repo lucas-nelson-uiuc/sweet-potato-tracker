@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -21,336 +20,460 @@
       --cream: #f5e8d0;
       --muted: #8a6a50;
       --border: #4a2e1a;
+      --blue: #4a9eff;
     }
 
-```
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
-  color: var(--cream);
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
-  overflow-x: hidden;
-  padding-bottom: env(safe-area-inset-bottom);
-}
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--cream);
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      overflow-x: hidden;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
 
-/* Grain overlay */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 100;
-  opacity: 0.4;
-}
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.4;
+    }
 
-/* Radial glow */
-body::after {
-  content: '';
-  position: fixed;
-  top: -30%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80vw;
-  height: 80vw;
-  background: radial-gradient(circle, rgba(232,103,42,0.12) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-}
+    body::after {
+      content: '';
+      position: fixed;
+      top: -30%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80vw;
+      height: 80vw;
+      background: radial-gradient(circle, rgba(232,103,42,0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      transition: background 0.4s;
+    }
 
-.app {
-  position: relative;
-  z-index: 1;
-  max-width: 430px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
+    body.backdate-mode::after {
+      background: radial-gradient(circle, rgba(74,158,255,0.10) 0%, transparent 70%);
+    }
 
-/* HEADER */
-header {
-  padding-top: calc(env(safe-area-inset-top) + 32px);
-  padding-bottom: 24px;
-  text-align: center;
-}
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 430px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
 
-.header-label {
-  font-family: 'DM Sans', sans-serif;
-  font-weight: 300;
-  font-size: 11px;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 6px;
-}
+    header {
+      padding-top: calc(env(safe-area-inset-top) + 32px);
+      padding-bottom: 24px;
+      text-align: center;
+    }
 
-h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: 32px;
-  font-weight: 900;
-  color: var(--cream);
-  line-height: 1.1;
-}
+    .header-label {
+      font-weight: 300;
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
 
-h1 span {
-  color: var(--orange);
-}
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--cream);
+      line-height: 1.1;
+    }
 
-/* BIG LOG BUTTON */
-.log-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 32px 0 40px;
-}
+    h1 span { color: var(--orange); transition: color 0.3s; }
+    body.backdate-mode h1 span { color: var(--blue); }
 
-.big-btn {
-  width: 160px;
-  height: 160px;
-  border-radius: 50%;
-  border: none;
-  background: radial-gradient(circle at 35% 35%, #ff9040, #c45018 60%, #8a3010);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: 64px;
-  box-shadow:
-    0 0 0 1px rgba(232,103,42,0.3),
-    0 8px 32px rgba(0,0,0,0.5),
-    0 0 60px rgba(232,103,42,0.2);
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
-  position: relative;
-  overflow: hidden;
-  -webkit-user-select: none;
-  user-select: none;
-}
+    .backdate-banner {
+      display: none;
+      background: rgba(74,158,255,0.12);
+      border: 1px solid rgba(74,158,255,0.3);
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
 
-.big-btn::before {
-  content: '';
-  position: absolute;
-  top: 12%;
-  left: 20%;
-  width: 40%;
-  height: 30%;
-  background: radial-gradient(ellipse, rgba(255,255,255,0.2), transparent);
-  border-radius: 50%;
-}
+    body.backdate-mode .backdate-banner { display: block; }
 
-.big-btn:active {
-  transform: scale(0.93);
-  box-shadow:
-    0 0 0 1px rgba(232,103,42,0.3),
-    0 4px 16px rgba(0,0,0,0.5),
-    0 0 30px rgba(232,103,42,0.15);
-}
+    .backdate-banner .bd-month {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--blue);
+    }
 
-.btn-hint {
-  margin-top: 16px;
-  font-size: 12px;
-  color: var(--muted);
-  letter-spacing: 0.05em;
-}
+    .backdate-banner .bd-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
 
-/* TOTAL BADGE */
-.total-strip {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 20px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 28px;
-}
+    .exit-btn {
+      margin-top: 10px;
+      background: none;
+      border: 1px solid rgba(74,158,255,0.4);
+      color: var(--blue);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      padding: 7px 18px;
+      border-radius: 99px;
+      cursor: pointer;
+    }
 
-.total-label {
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
+    .log-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 0 40px;
+    }
 
-.total-number {
-  font-family: 'Playfair Display', serif;
-  font-size: 42px;
-  font-weight: 900;
-  color: var(--orange-bright);
-  line-height: 1;
-}
+    .big-btn {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      border: none;
+      background: radial-gradient(circle at 35% 35%, #ff9040, #c45018 60%, #8a3010);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      box-shadow:
+        0 0 0 1px rgba(232,103,42,0.3),
+        0 8px 32px rgba(0,0,0,0.5),
+        0 0 60px rgba(232,103,42,0.2);
+      transition: transform 0.1s ease, box-shadow 0.15s ease, background 0.4s ease;
+      position: relative;
+      overflow: hidden;
+      -webkit-user-select: none;
+      user-select: none;
+    }
 
-.total-emoji {
-  font-size: 28px;
-}
+    body.backdate-mode .big-btn {
+      background: radial-gradient(circle at 35% 35%, #7ab8ff, #2a6ec4 60%, #1a4a8a);
+      box-shadow:
+        0 0 0 1px rgba(74,158,255,0.3),
+        0 8px 32px rgba(0,0,0,0.5),
+        0 0 60px rgba(74,158,255,0.2);
+    }
 
-/* SECTION TITLE */
-.section-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--cream);
-  margin-bottom: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+    .big-btn::before {
+      content: '';
+      position: absolute;
+      top: 12%; left: 20%;
+      width: 40%; height: 30%;
+      background: radial-gradient(ellipse, rgba(255,255,255,0.2), transparent);
+      border-radius: 50%;
+    }
 
-.section-title::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
+    .big-btn:active { transform: scale(0.93); }
 
-/* MONTH CARDS */
-.months {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 40px;
-}
+    .btn-hint {
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      text-align: center;
+      transition: color 0.3s;
+    }
 
-.month-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  transition: border-color 0.2s;
-}
+    body.backdate-mode .btn-hint { color: var(--blue); opacity: 0.8; }
 
-.month-card.current {
-  border-color: rgba(232,103,42,0.5);
-  background: linear-gradient(135deg, var(--card), #3d2415);
-}
+    .total-strip {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
 
-.month-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--cream);
-  min-width: 90px;
-}
+    .total-label {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
 
-.month-bar-wrap {
-  flex: 1;
-  height: 6px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 99px;
-  overflow: hidden;
-}
+    .total-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 42px;
+      font-weight: 900;
+      color: var(--orange-bright);
+      line-height: 1;
+    }
 
-.month-bar {
-  height: 100%;
-  border-radius: 99px;
-  background: linear-gradient(90deg, var(--orange), var(--amber));
-  transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
+    .total-emoji { font-size: 28px; }
 
-.month-count {
-  font-family: 'Playfair Display', serif;
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--orange-bright);
-  min-width: 36px;
-  text-align: right;
-}
+    .undo-row {
+      display: flex;
+      justify-content: center;
+      margin-top: -24px;
+      margin-bottom: 28px;
+    }
 
-.month-emojis {
-  font-size: 13px;
-  color: var(--muted);
-  margin-top: 4px;
-  word-break: break-all;
-  line-height: 1.5;
-}
+    .undo-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      padding: 8px 18px;
+      border-radius: 99px;
+      cursor: pointer;
+    }
 
-/* TOAST */
-.toast {
-  position: fixed;
-  bottom: calc(env(safe-area-inset-bottom) + 32px);
-  left: 50%;
-  transform: translateX(-50%) translateY(100px);
-  background: var(--orange);
-  color: white;
-  padding: 12px 24px;
-  border-radius: 99px;
-  font-size: 15px;
-  font-weight: 500;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 200;
-  white-space: nowrap;
-}
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--cream);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-.toast.show {
-  transform: translateX(-50%) translateY(0);
-}
+    .section-title::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
 
-/* POP ANIMATION */
-@keyframes pop {
-  0% { transform: scale(1); }
-  30% { transform: scale(1.18); }
-  60% { transform: scale(0.95); }
-  100% { transform: scale(1); }
-}
+    .backdate-hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 12px;
+      letter-spacing: 0.04em;
+    }
 
-.popping {
-  animation: pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
+    .months {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
 
-/* Floating emoji animation */
-.float-emoji {
-  position: fixed;
-  font-size: 32px;
-  pointer-events: none;
-  z-index: 150;
-  animation: floatUp 1s ease-out forwards;
-}
+    .month-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      transition: border-color 0.2s, background 0.2s;
+      cursor: pointer;
+      -webkit-user-select: none;
+      user-select: none;
+    }
 
-@keyframes floatUp {
-  0% { transform: translateY(0) scale(1); opacity: 1; }
-  100% { transform: translateY(-160px) scale(0.5); opacity: 0; }
-}
+    .month-card:active { opacity: 0.8; }
 
-/* Undo */
-.undo-row {
-  display: flex;
-  justify-content: center;
-  margin-top: -24px;
-  margin-bottom: 28px;
-}
+    .month-card.current {
+      border-color: rgba(232,103,42,0.5);
+      background: linear-gradient(135deg, var(--card), #3d2415);
+    }
 
-.undo-btn {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--muted);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  padding: 8px 18px;
-  border-radius: 99px;
-  cursor: pointer;
-  transition: color 0.2s, border-color 0.2s;
-}
+    .month-card.selected-backdate {
+      border-color: rgba(74,158,255,0.6);
+      background: linear-gradient(135deg, var(--card), #1a2a3d);
+    }
 
-.undo-btn:active {
-  color: var(--cream);
-  border-color: var(--muted);
-}
+    .month-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
 
-.empty-state {
-  text-align: center;
-  color: var(--muted);
-  font-size: 14px;
-  padding: 24px 0;
-}
-```
+    .month-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--cream);
+      flex: 1;
+    }
 
+    .month-count {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--orange-bright);
+    }
+
+    .month-card.selected-backdate .month-count { color: var(--blue); }
+
+    .month-bar-wrap {
+      height: 6px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .month-bar {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--orange), var(--amber));
+      transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .month-card.selected-backdate .month-bar {
+      background: linear-gradient(90deg, var(--blue), #7ab8ff);
+    }
+
+    .month-emojis {
+      font-size: 13px;
+      color: var(--muted);
+      word-break: break-all;
+      line-height: 1.5;
+    }
+
+    .month-tap-hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+      opacity: 0.6;
+    }
+
+    .add-past-btn {
+      background: none;
+      border: 1px dashed var(--border);
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      padding: 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: calc(env(safe-area-inset-bottom) + 32px);
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--orange);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 99px;
+      font-size: 15px;
+      font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s;
+      z-index: 200;
+      white-space: nowrap;
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.blue { background: var(--blue); }
+
+    @keyframes pop {
+      0% { transform: scale(1); }
+      30% { transform: scale(1.18); }
+      60% { transform: scale(0.95); }
+      100% { transform: scale(1); }
+    }
+
+    .popping { animation: pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+    .float-emoji {
+      position: fixed;
+      font-size: 32px;
+      pointer-events: none;
+      z-index: 150;
+      animation: floatUp 1s ease-out forwards;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-160px) scale(0.5); opacity: 0; }
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 300;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: #2a1a0e;
+      border: 1px solid var(--border);
+      border-radius: 24px 24px 0 0;
+      padding: 24px 20px calc(env(safe-area-inset-bottom) + 24px);
+      width: 100%;
+      max-width: 430px;
+    }
+
+    .modal-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      max-height: 55vh;
+      overflow-y: auto;
+      margin-bottom: 12px;
+    }
+
+    .month-option {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 8px;
+      text-align: center;
+      cursor: pointer;
+      color: var(--cream);
+      font-size: 13px;
+    }
+
+    .month-option:active {
+      border-color: var(--blue);
+      background: rgba(74,158,255,0.1);
+    }
+
+    .mo-name { font-weight: 500; }
+    .mo-year { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .modal-cancel {
+      width: 100%;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      padding: 14px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -360,9 +483,15 @@ h1 span {
     <h1>Sweet <span>Potato</span><br>Journal</h1>
   </header>
 
+  <div class="backdate-banner" id="backdateBanner">
+    <div class="bd-month" id="bdMonthName">—</div>
+    <div class="bd-sub">Tap the button to log sweet potatoes for this month</div>
+    <button class="exit-btn" onclick="exitBackdate()">✕ Back to today</button>
+  </div>
+
   <section class="log-section">
     <button class="big-btn" id="logBtn" onclick="logOne()">🍠</button>
-    <div class="btn-hint">tap to log one</div>
+    <div class="btn-hint" id="btnHint">tap to log one</div>
   </section>
 
   <div class="total-strip">
@@ -378,20 +507,28 @@ h1 span {
   </div>
 
   <div class="section-title">By Month</div>
-  <div class="months" id="monthsList">
-    <div class="empty-state">No sweet potatoes logged yet.<br>Tap the button above! 🍠</div>
-  </div>
+  <p class="backdate-hint">Tap any past month to backfill it</p>
+  <div class="months" id="monthsList"></div>
+  <button class="add-past-btn" onclick="openMonthPicker()">+ Backfill a month not listed</button>
 </div>
 
 <div class="toast" id="toast"></div>
 
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-title">Pick a month to backfill</div>
+    <div class="month-grid" id="monthGrid"></div>
+    <button class="modal-cancel" onclick="closeMonthPicker()">Cancel</button>
+  </div>
+</div>
+
 <script>
   const STORAGE_KEY = 'sp_log_v1';
+  let backdateKey = null;
 
   function loadLog() {
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    } catch { return []; }
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+    catch { return []; }
   }
 
   function saveLog(log) {
@@ -404,8 +541,7 @@ h1 span {
 
   function monthLabel(key) {
     const [y, m] = key.split('-');
-    const d = new Date(+y, +m - 1, 1);
-    return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    return new Date(+y, +m - 1, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   }
 
   function buildMonthMap(log) {
@@ -417,47 +553,74 @@ h1 span {
     return map;
   }
 
-  function render() {
-    const log = loadLog();
-    const total = log.length;
-    document.getElementById('totalCount').textContent = total;
+  function enterBackdate(key) {
+    backdateKey = key;
+    document.body.classList.add('backdate-mode');
+    document.getElementById('bdMonthName').textContent = monthLabel(key);
+    document.getElementById('btnHint').textContent = `logging for ${monthLabel(key)}`;
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
-    const map = buildMonthMap(log);
-    const keys = Object.keys(map).sort().reverse();
-    const max = Math.max(...Object.values(map), 1);
+  function exitBackdate() {
+    backdateKey = null;
+    document.body.classList.remove('backdate-mode');
+    document.getElementById('btnHint').textContent = 'tap to log one';
+    render();
+  }
+
+  function handleMonthTap(key) {
     const currentKey = getMonthKey(new Date());
-
-    const container = document.getElementById('monthsList');
-    if (keys.length === 0) {
-      container.innerHTML = '<div class="empty-state">No sweet potatoes logged yet.<br>Tap the button above! 🍠</div>';
+    if (key === currentKey) {
+      if (backdateKey) exitBackdate();
       return;
     }
+    if (backdateKey === key) { exitBackdate(); return; }
+    enterBackdate(key);
+  }
 
+  function render() {
+    const log = loadLog();
+    document.getElementById('totalCount').textContent = log.length;
+
+    const map = buildMonthMap(log);
+    const currentKey = getMonthKey(new Date());
+    const keySet = new Set(Object.keys(map));
+    keySet.add(currentKey);
+    const keys = Array.from(keySet).sort().reverse();
+    const max = Math.max(...Object.values(map), 1);
+
+    const container = document.getElementById('monthsList');
     container.innerHTML = keys.map(k => {
-      const count = map[k];
+      const count = map[k] || 0;
       const pct = Math.round((count / max) * 100);
       const isCurrent = k === currentKey;
-      const emojis = '🍠'.repeat(Math.min(count, 30)) + (count > 30 ? `+${count-30}` : '');
+      const isSelected = k === backdateKey;
+      const emojis = '🍠'.repeat(Math.min(count, 30)) + (count > 30 ? ` +${count - 30}` : '');
+
       return `
-        <div class="month-card ${isCurrent ? 'current' : ''}">
-          <div style="flex:1">
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-              <div class="month-name">${monthLabel(k)}</div>
-              <div class="month-count">${count}</div>
-            </div>
-            <div class="month-bar-wrap"><div class="month-bar" style="width:${pct}%"></div></div>
-            <div class="month-emojis">${emojis}</div>
+        <div class="month-card ${isCurrent ? 'current' : ''} ${isSelected ? 'selected-backdate' : ''}"
+             onclick="handleMonthTap('${k}')">
+          <div class="month-row">
+            <div class="month-name">${monthLabel(k)}</div>
+            <div class="month-count">${count}</div>
           </div>
+          <div class="month-bar-wrap">
+            <div class="month-bar" style="width:${Math.max(pct,0)}%"></div>
+          </div>
+          ${count > 0 ? `<div class="month-emojis">${emojis}</div>` : ''}
+          ${!isCurrent ? `<div class="month-tap-hint">${isSelected ? '✓ Currently backfilling — tap to exit' : 'Tap to backfill this month'}</div>` : ''}
         </div>
       `;
     }).join('');
   }
 
-  function showToast(msg) {
+  function showToast(msg, blue = false) {
     const t = document.getElementById('toast');
     t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2000);
+    t.className = 'toast show' + (blue ? ' blue' : '');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 2200);
   }
 
   function spawnFloater() {
@@ -474,7 +637,14 @@ h1 span {
 
   function logOne() {
     const log = loadLog();
-    log.push(Date.now());
+    let ts;
+    if (backdateKey) {
+      const [y, m] = backdateKey.split('-');
+      ts = new Date(+y, +m - 1, 15, 12, 0, 0).getTime();
+    } else {
+      ts = Date.now();
+    }
+    log.push(ts);
     saveLog(log);
     render();
 
@@ -484,21 +654,74 @@ h1 span {
     btn.classList.add('popping');
     spawnFloater();
 
-    const todayCount = buildMonthMap(log)[getMonthKey(new Date())] || 0;
-    showToast(`🍠 #${todayCount} this month!`);
+    const map = buildMonthMap(log);
+    const targetKey = backdateKey || getMonthKey(new Date());
+    const count = map[targetKey] || 0;
+
+    if (backdateKey) {
+      showToast(`🍠 #${count} for ${monthLabel(backdateKey)}`, true);
+    } else {
+      showToast(`🍠 #${count} this month!`);
+    }
   }
 
   function undoOne() {
     const log = loadLog();
     if (log.length === 0) { showToast('Nothing to undo!'); return; }
-    log.pop();
+
+    if (backdateKey) {
+      const entries = log.map((ts, i) => ({ ts, i }))
+        .filter(({ ts }) => getMonthKey(new Date(ts)) === backdateKey);
+      if (entries.length === 0) { showToast('Nothing to undo for this month!'); return; }
+      log.splice(entries[entries.length - 1].i, 1);
+    } else {
+      log.pop();
+    }
+
     saveLog(log);
     render();
-    showToast('Removed last entry');
+    showToast('Removed last entry', !!backdateKey);
+  }
+
+  function openMonthPicker() {
+    const log = loadLog();
+    const map = buildMonthMap(log);
+    const now = new Date();
+    const currentKey = getMonthKey(now);
+    const options = [];
+
+    for (let i = 1; i <= 48; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const k = getMonthKey(d);
+      if (!map[k]) options.push({ k, d });
+    }
+
+    if (options.length === 0) { showToast('All months already listed!'); return; }
+
+    document.getElementById('monthGrid').innerHTML = options.slice(0, 24).map(({ k, d }) => `
+      <div class="month-option" onclick="pickMonth('${k}')">
+        <div class="mo-name">${d.toLocaleDateString('en-US', { month: 'short' })}</div>
+        <div class="mo-year">${d.getFullYear()}</div>
+      </div>
+    `).join('');
+
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  function closeMonthPicker() {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeMonthPicker();
+  }
+
+  function pickMonth(key) {
+    closeMonthPicker();
+    enterBackdate(key);
   }
 
   render();
 </script>
-
 </body>
 </html>
